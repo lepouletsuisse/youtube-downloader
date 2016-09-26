@@ -66,6 +66,6 @@ startScripts {
     enabled = false
 }
 
-installApp {
+/* installApp {
     enabled = false
-}
+} */
