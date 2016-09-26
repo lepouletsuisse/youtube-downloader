@@ -1,0 +1,6 @@
+sourceSets.main.java.srcDirs = ["src"]
+sourceSets.main.resources.srcDirs = ["res"]
+
+compileJava.options.encoding = 'UTF-8'
+
+mainClassName = 'com.lepouletsuisse.youtube_downloader.desktop.Main'
