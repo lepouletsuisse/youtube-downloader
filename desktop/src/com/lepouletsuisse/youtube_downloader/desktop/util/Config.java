@@ -3,6 +3,7 @@ package com.lepouletsuisse.youtube_downloader.desktop.util;
 import com.lepouletsuisse.youtube_downloader.desktop.Main;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class Config {
 
     private HashMap<String, String> configs = new HashMap<>();
 
-    private String configPath;
+    private File configPath;
     private String currentPath;
     private Properties prop = new Properties();
     private String osName;
@@ -25,17 +26,19 @@ public class Config {
     private void load() throws RuntimeException {
         Path currentRelativePath = Paths.get("");
         currentPath = currentRelativePath.toAbsolutePath().toString();
-        this.configPath = Main.class.getClassLoader().getResource("config/config.properties").getPath();
+        try {
+            this.configPath = new File(Main.class.getResource("config/config.properties").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         System.out.println("Chargement du fichier de configuration en " + configPath + "...");
 
         osName = System.getProperty("os.name");
         osVersion = System.getProperty("os.version");
 
-        InputStream input = null;
-        try{
-            input = new FileInputStream(configPath);
+        try (InputStream input = new FileInputStream(configPath)){
             prop.load(input);
-            String ffmpeg = Main.class.getClassLoader().getResource("executables").getPath();
+            String ffmpeg = Main.class.getResource("executables").getPath();
             if(ffmpeg.charAt(0) == '/'){
                 ffmpeg = ffmpeg.substring(1, ffmpeg.length());
             }
@@ -52,20 +55,15 @@ public class Config {
                 String value = prop.getProperty(key);
                 System.out.println("Key : " + key + ", Value : " + value);
             }*/
-        }catch(FileNotFoundException notFound){
+        }
+        catch(FileNotFoundException notFound){
+            System.err.println("Unable to load config file " + configPath);
             throw new RuntimeException(notFound);
         }
         catch(Exception e){
             System.err.println("Error! " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException(e);
-        }finally{
-            try{
-                input.close();
-            }catch(Exception e){
-                System.err.println("Error! " + e.getMessage());
-                e.printStackTrace();
-            }
         }
         System.out.println("Fichier de configuration chargé!");
     }
@@ -85,8 +83,7 @@ public class Config {
     public void save(){
         FileOutputStream fileOut = null;
         try{
-            File file = new File(configPath);
-            fileOut = new FileOutputStream(file);
+            fileOut = new FileOutputStream(configPath);
             prop.store(fileOut, "Configuration for Youtube Downloader");
             load();
         }catch(Exception e){
