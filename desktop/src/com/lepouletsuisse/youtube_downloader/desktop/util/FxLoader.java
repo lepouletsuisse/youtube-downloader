@@ -26,7 +26,7 @@ public class FxLoader {
      * @return L'URL de la ressource
      */
     public static URL getUrl(String resource) {
-        return Main.class.getClassLoader().getResource(resource);
+        return Main.class.getResource(resource);
     }
 
     /**

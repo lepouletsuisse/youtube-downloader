@@ -35,6 +35,6 @@ project(':desktop') {
     dependencies {
         // https://mvnrepository.com/artifact/org.jsoup/jsoup
         compile 'org.jsoup:jsoup:1.9.2'
-        compile 'com.sapher:youtubedl:1.0'
+        compile 'com.sapher:youtubedl:1.1'
     }
 }

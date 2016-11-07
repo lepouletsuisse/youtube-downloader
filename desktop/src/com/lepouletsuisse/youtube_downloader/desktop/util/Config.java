@@ -11,25 +11,26 @@ import java.util.Properties;
 
 public class Config {
 
-    public Config() {
+    public Config(String projectPath) {
+        setProjectPath(projectPath);
         load();
     }
 
     private HashMap<String, String> configs = new HashMap<>();
 
     private File configPath;
-    private String currentPath;
     private Properties prop = new Properties();
     private String osName;
     private String osVersion;
+    private String projectPath;
+    private String executablesPath;
 
     private void load() throws RuntimeException {
-        Path currentRelativePath = Paths.get("");
-        currentPath = currentRelativePath.toAbsolutePath().toString();
         try {
-            this.configPath = new File(Main.class.getResource("config/config.properties").toURI());
-        } catch (URISyntaxException e) {
+            this.configPath = new File(projectPath + File.separator + "config" + File.separator + "config.properties");
+        } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
         System.out.println("Chargement du fichier de configuration en " + configPath + "...");
 
@@ -38,23 +39,10 @@ public class Config {
 
         try (InputStream input = new FileInputStream(configPath)){
             prop.load(input);
-            String ffmpeg = Main.class.getResource("executables").getPath();
-            if(ffmpeg.charAt(0) == '/'){
-                ffmpeg = ffmpeg.substring(1, ffmpeg.length());
-            }
-            configs.put("ffmpeg_path", ffmpeg);
-            configs.put("dest_directory", prop.getProperty("dest_directory"));
+            configs.put("dest_directory", prop.getProperty("dest_directory").replace("\\", "/"));
             configs.put("pref_mp3", prop.getProperty("pref_mp3"));
             configs.put("pref_thumbnails", prop.getProperty("pref_thumbnails"));
             configs.put("pref_playlist", prop.getProperty("pref_playlist"));
-
-            /* Get all the options in the config file
-            Enumeration<?> e = prop.propertyNames();
-            while(e.hasMoreElements()){
-                String key = (String) e.nextElement();
-                String value = prop.getProperty(key);
-                System.out.println("Key : " + key + ", Value : " + value);
-            }*/
         }
         catch(FileNotFoundException notFound){
             System.err.println("Unable to load config file " + configPath);
@@ -74,6 +62,22 @@ public class Config {
 
     public void setValue(String key, String newValue){
         prop.setProperty(key, newValue);
+    }
+
+    public String getProjectPath() {
+        return projectPath;
+    }
+
+    public void setProjectPath(String path) {
+        projectPath = path;
+    }
+
+    public String getExecutablesPath() {
+        return executablesPath;
+    }
+
+    public void setExecutablesPath(String path) {
+        executablesPath = path;
     }
 
     public HashMap<String, String> getAllConfigs(){
@@ -97,9 +101,5 @@ public class Config {
                 e.printStackTrace();
             }
         }
-    }
-
-    public String getCurrentPath(){
-        return currentPath;
     }
 }

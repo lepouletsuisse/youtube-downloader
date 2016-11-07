@@ -133,7 +133,6 @@ public class DownloaderController extends Controller {
         options.put("no-part", null);
         options.put("newline", null);
         options.put("verbose", null);
-        options.put("ffmpeg-location", conf.getValue("ffmpeg_path"));
         if (cb_playlist.isSelected() && cb_playlist.isVisible()) {
             options.put("yes-playlist", null);
             options.put("playlist-items", songIndexs);
@@ -169,6 +168,7 @@ public class DownloaderController extends Controller {
             // Make request and return response
             YoutubeDLResponse response = YoutubeDL.execute(request);
             // Response
+            System.out.println("Here it is the command used: " + response.getCommand());
             System.out.println(response.getOut()); // Executable output
 
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public class DownloaderController extends Controller {
             for(Element element : newsHeadlines){
                 CheckBox cb = new CheckBox(element.text());
                 cb.setSelected(true);
-                cb.getStylesheets().add(Main.class.getClassLoader().getResource("view/style.css").toString());
+                cb.getStylesheets().add(Main.class.getResource("view/style.css").toString());
                 cb.setOnAction(event -> updateCB(cb));
                 updateCB(cb);
                 YoutubeSong song = new YoutubeSong(cb, i++);
